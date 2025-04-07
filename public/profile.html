@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light">
+  <div class="container">
+    <h1>Welcome!</h1>
+    <button id="logout">Logout</button>
+    <button id="themeToggle">Toggle Theme</button>
+    <button id="refresh">Refresh Data</button>
+    <div id="data"></div>
+  </div>
+
+  <script>
+    // Theme handling
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const newTheme = document.body.className === 'dark' ? 'light' : 'dark';
+      document.body.className = newTheme;
+      localStorage.setItem('theme', newTheme);
+    });
+
+    // Data fetching
+    const updateData = async () => {
+      try {
+        const res = await fetch('/data');
+        const data = await res.json();
+        document.getElementById('data').innerHTML = `
+          <p>${data.message}</p>
+          <small>Updated: ${data.timestamp}</small>
+        `;
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    // Logout
+    document.getElementById('logout').addEventListener('click', async () => {
+      await fetch('/logout', { method: 'POST' });
+      window.location.href = '/';
+    });
+
+    // Initial load
+    document.getElementById('refresh').addEventListener('click', updateData);
+    updateData();
+  </script>
+</body>
+</html>
